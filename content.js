@@ -93,7 +93,19 @@
 
   // --- 実行部 ---
 
+  // UserCell は検索サジェストや「おすすめユーザー」ウィジェットなど、
+  // 切り替えメニュー以外の場所でも使い回されているコンポーネント。
+  // 切り替えメニュー内の行（現在のアカウント/切り替え候補いずれも）は
+  // 祖先に role="group" を持つが、検索サジェストや他のウィジェットには
+  // 出てこないため、これを目印に「切り替えメニュー内のUserCellだけ」を
+  // 対象にする（role が listitem か button かは行によって変わるため使わない）。
+  function isAccountSwitcherUserCell(container) {
+    if (container.getAttribute('data-testid') !== 'UserCell') return true; // UserCell以外は無条件で対象
+    return !!container.closest('[role="group"]');
+  }
+
   function processMaskContainer(container) {
+    if (!isAccountSwitcherUserCell(container)) return;
     container.querySelectorAll('span').forEach(maskSpan);
   }
 
