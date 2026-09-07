@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "X_ID_Hider_on_Switching",
+  "version": "1.0.0",
+  "description": "Xでアカウントを切り替えるメニューに表示される表示名とID(@handle)を伏せ字にします。",
+  "content_scripts": [
+    {
+      "matches": ["*://twitter.com/*", "*://x.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
