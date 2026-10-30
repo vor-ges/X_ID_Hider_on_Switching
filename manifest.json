@@ -1,12 +1,24 @@
 {
   "manifest_version": 3,
   "name": "X_ID_Hider",
-  "version": "1.0.1",
-  "description": "This extension enables you to hide user names and ID on account toggle panel and timeline.",
+  "version": "1.2.0",
+  "description": "Masks account names and IDs in X's account switcher and, optionally, on the timeline.",
+  "permissions": [
+    "storage"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "X_ID_Hider Settings"
+  },
   "content_scripts": [
     {
-      "matches": ["*://twitter.com/*", "*://x.com/*"],
-      "js": ["content.js"],
+      "matches": [
+        "*://twitter.com/*",
+        "*://x.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
       "run_at": "document_idle"
     }
   ]
