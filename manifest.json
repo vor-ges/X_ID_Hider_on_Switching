@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "X_ID_Hider_on_Switching",
-  "version": "1.0.0",
-  "description": "Xでアカウントを切り替えるメニューに表示される表示名とID(@handle)を伏せ字にします。",
+  "name": "X_ID_Hider",
+  "version": "1.0.1",
+  "description": "This extension enables you to hide user names and ID on account toggle panel and timeline.",
   "content_scripts": [
     {
       "matches": ["*://twitter.com/*", "*://x.com/*"],
