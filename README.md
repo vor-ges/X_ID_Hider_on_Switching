@@ -1,10 +1,10 @@
-# X ID Hider on Switching
+# X ID Hider
 
 A browser extension that masks display names and account IDs in X's account-switching interface.
 
 ## Concept
 
-X ID Hider on Switching was created to help keep account names and IDs out of view when switching between X accounts.
+X ID Hider was created to help keep account names and IDs out of view when switching between X accounts.
 
 The extension masks display names and `@handle` values in selected account-switching interface elements. It also replaces the handle in the logout button's text with a localized word for "account".
 
