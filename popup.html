@@ -1,52 +1,48 @@
 <!doctype html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>X_ID_Hider Settings</title>
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      width: 280px;
-      padding: 14px;
-      margin: 0;
-      color: #202124;
-    }
-    h1 {
-      font-size: 14px;
-      margin: 0 0 12px;
-      font-weight: 600;
-    }
-    label {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-      font-size: 13px;
-      padding: 8px 0;
-      cursor: pointer;
-    }
-    .note {
-      font-size: 11px;
-      color: #777;
-      margin-top: 10px;
-      line-height: 1.5;
-    }
-    input[type="checkbox"] {
-      width: 34px;
-      height: 20px;
-      flex: 0 0 auto;
-    }
-  </style>
+<meta charset="utf-8">
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    width: 260px;
+    padding: 14px;
+    margin: 0;
+  }
+  h1 {
+    font-size: 13px;
+    margin: 0 0 10px;
+    color: #555;
+    font-weight: 600;
+  }
+  label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    padding: 6px 0;
+    cursor: pointer;
+  }
+  .note {
+    font-size: 11px;
+    color: #888;
+    margin-top: 10px;
+    line-height: 1.5;
+  }
+  input[type="checkbox"] {
+    width: 34px;
+    height: 20px;
+  }
+</style>
 </head>
 <body>
-  <h1>X_ID_Hider Settings</h1>
-  <label for="toggle-timeline">
-    <span>Hide author names and IDs on the timeline</span>
+  <h1>X 名前/ID非表示 設定</h1>
+  <label>
+    タイムラインの投稿者名/IDを隠す
     <input type="checkbox" id="toggle-timeline">
   </label>
   <div class="note">
-    Names and IDs in the account-switching menu are always masked.
+    アカウント切り替えメニューの表示名/IDは常にマスクされます。
   </div>
   <script src="popup.js"></script>
 </body>
