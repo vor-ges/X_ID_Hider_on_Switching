@@ -50,9 +50,7 @@ This project was created to make switching between X accounts more comfortable w
 
 ## Author
 
-nur_ieren
-
-[X](https://x.com/nur_ieren)
+vor_ges
 
 ## Licence
 
