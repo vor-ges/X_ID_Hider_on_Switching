@@ -1,20 +1,18 @@
-// X (Twitter) の
-//   1) アカウント切り替えメニュー（常時マスク・トグルなし）
-//   2) タイムライン上の投稿者名/ID（ON/OFFトグル可能）
-// を伏せ字にする content script。
+// Content script for X (Twitter) that masks:
+//   1) Names/IDs in the account switcher menu (always on, no toggle)
+//   2) Author names/IDs in the timeline (can be toggled on/off)
 //
-// 方針:
-//   Xはビルドごとにクラス名(css-xxxx, r-xxxx)が変わるため、
-//   クラス名には依存しない。代わりに:
-//     - data-testid 属性（比較的安定）
-//     - div[dir="ltr"] の中にある「子要素を持たないspan（leaf span）」
-//   という構造的な特徴だけを頼りにテキストを検出してマスクする。
+// Approach:
+//   X's class names (css-xxxx, r-xxxx) change between builds, so we never
+//   rely on them. Instead we use only structural features:
+//     - data-testid attributes (relatively stable)
+//     - "leaf spans" (spans without child elements) inside div[dir="ltr"]
 
 (function () {
   'use strict';
 
   // ============================================================
-  // 共通ユーティリティ
+  // Shared utilities
   // ============================================================
 
   function maskText(original) {
@@ -25,26 +23,28 @@
     return '•'.repeat(Math.min(Math.max(trimmed.length, 4), 8));
   }
 
-  // 記号・絵文字だけのテキスト（区切りの "・" や "·" など）を誤ってマスク
-  // しないためのチェック。文字か数字が1つも含まれていなければ対象外にする。
+  // Avoids masking symbol-only text (separators such as "·").
+  // Text is only a target if it contains at least one letter or digit.
   function hasLetterOrDigit(text) {
     return /[\p{L}\p{N}]/u.test(text);
   }
 
   // ============================================================
-  // 1) アカウント切り替えメニュー（常時マスク）
+  // 1) Account switcher menu (always masked)
   // ============================================================
 
   const MASK_TESTIDS = [
-    'UserCell',                        // アカウント切り替えメニュー内の各行
-    'SideNav_AccountSwitcher_Button',  // 左サイドバーの自分のアカウント表示
-    'AccountSwitcher_Switch_Button'    // 切り替え候補アカウントのボタン
+    'UserCell',                        // each row in the account switcher menu
+    'SideNav_AccountSwitcher_Button',  // current account button in the left sidebar
+    'AccountSwitcher_Switch_Button'    // buttons for the other accounts
   ];
   const LOGOUT_TESTID = 'AccountSwitcher_Logout_Button';
 
   const MASK_SELECTOR = MASK_TESTIDS.map((id) => `[data-testid="${id}"]`).join(',');
   const LOGOUT_SELECTOR = `[data-testid="${LOGOUT_TESTID}"]`;
 
+  // Word used in place of "@handle" inside the logout label, per UI language
+  // (detected from <html lang="...">; unknown languages fall back to "Account").
   const ACCOUNT_WORD_BY_LANG = {
     ja: 'アカウント', en: 'account', de: 'Account', fr: 'compte', es: 'cuenta',
     it: 'account', pt: 'conta', ko: '계정', zh: '账号', ru: 'аккаунт',
@@ -68,8 +68,9 @@
     span.dataset.xhideMasked = '1';
   }
 
-  // ログアウトボタンは "@handle abmelden" / "Log out @handle" のように
-  // 文中にIDが埋め込まれるため、文全体ではなく "@handle" 部分だけを置換。
+  // The logout button embeds the ID inside a sentence (e.g. "@handle abmelden"
+  // or "Log out @handle"), so only the "@handle" part is replaced rather than
+  // the whole text.
   function maskLogoutSpan(span) {
     if (span.dataset.xhideMasked === '1') return;
     if (span.children.length > 0) return;
@@ -83,12 +84,10 @@
     span.dataset.xhideMasked = '1';
   }
 
-  // UserCell は検索サジェストや「おすすめユーザー」ウィジェットなど、
-  // 切り替えメニュー以外の場所でも使い回されているコンポーネント。
-  // 切り替えメニュー内の行（現在のアカウント/切り替え候補いずれも）は
-  // 祖先に role="group" を持つが、検索サジェストや他のウィジェットには
-  // 出てこないため、これを目印に「切り替えメニュー内のUserCellだけ」を
-  // 対象にする。
+  // UserCell is a shared component also used in search suggestions, "who to
+  // follow" widgets, etc. Rows inside the account switcher menu (both the
+  // current account and the other accounts) have a role="group" ancestor,
+  // which the other places do not, so we use that to target only the menu.
   function isAccountSwitcherUserCell(container) {
     if (container.getAttribute('data-testid') !== 'UserCell') return true;
     return !!container.closest('[role="group"]');
@@ -110,12 +109,12 @@
   }
 
   // ============================================================
-  // 2) タイムライン上の投稿者名/ID（ON/OFFトグル可能）
+  // 2) Author names/IDs in the timeline (toggleable)
   // ============================================================
 
   const TIMELINE_NAME_SELECTOR = '[data-testid="tweet"] [data-testid="User-Name"]';
 
-  let timelineMaskEnabled = true; // storageから読み込むまでの初期値
+  let timelineMaskEnabled = true; // default until storage has been read
 
   function maskTimelineSpan(span) {
     if (span.dataset.xhideTlMasked === '1') return;
@@ -123,9 +122,9 @@
     const original = span.textContent;
     if (!original) return;
     const trimmed = original.trim();
-    if (!trimmed || !hasLetterOrDigit(trimmed)) return; // "・" などの区切り記号は対象外
+    if (!trimmed || !hasLetterOrDigit(trimmed)) return; // skip separators like "·"
 
-    span.dataset.xhideTlOriginal = original;
+    span.dataset.xhideTlOriginal = original; // kept so the toggle can restore it
     span.textContent = maskText(original);
     span.dataset.xhideTlMasked = '1';
   }
@@ -158,7 +157,7 @@
   }
 
   // ============================================================
-  // 設定の読み込み・変更監視（タイムライン用トグル）
+  // Settings (timeline toggle)
   // ============================================================
 
   function applyTimelineSetting(enabled) {
@@ -183,7 +182,7 @@
   }
 
   // ============================================================
-  // 実行部
+  // Run
   // ============================================================
 
   function scanAll(root) {

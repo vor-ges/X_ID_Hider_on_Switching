@@ -1,12 +1,12 @@
 {
   "manifest_version": 3,
-  "name": "X アカウント切り替え時の名前・ID非表示",
+  "name": "X Account Switcher Name/ID Hider",
   "version": "1.1.0",
-  "description": "Xでアカウントを切り替えるメニューに表示される表示名とID(@handle)を伏せ字にします。タイムラインの投稿者名/IDのマスクはON/OFF切り替え可能です。",
+  "description": "Masks display names and IDs (@handle) shown in the X account switcher menu. Masking of author names/IDs in the timeline can be toggled on/off.",
   "permissions": ["storage"],
   "action": {
     "default_popup": "popup.html",
-    "default_title": "X 名前/ID非表示 設定"
+    "default_title": "X Name/ID Hider Settings"
   },
   "content_scripts": [
     {
